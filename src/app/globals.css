@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 23% 98%;
+    --foreground: 216 25% 18%;
+    --border: 220 16% 90%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    background-color: #f9fafb;
+    color: #1a202c;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-space-grotesk), sans-serif;
+  }
+
+  body,
+  p,
+  span,
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-manrope), sans-serif;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-primary-700 border border-primary-200 hover:bg-primary-50 focus:ring-primary-500;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary-300 bg-white text-primary-800 hover:bg-primary-50 focus:ring-primary-500;
+  }
+
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  [data-dashboard-theme] {
+    background-color: #f9fafb;
+    color: #1a202c;
+  }
+
+  [data-dashboard-theme] main {
+    min-height: 100vh;
+  }
+
+  [data-dashboard-theme] .bg-white,
+  [data-dashboard-theme] .bg-gray-50,
+  [data-dashboard-theme] .bg-slate-50 {
+    background-color: #ffffff !important;
+    backdrop-filter: none;
+  }
+
+  [data-dashboard-theme] .bg-white *,
+  [data-dashboard-theme] .bg-gray-50 *,
+  [data-dashboard-theme] .bg-slate-50 * {
+    color: #1a202c;
+  }
+
+  [data-dashboard-theme] .border-gray-100,
+  [data-dashboard-theme] .border-gray-200,
+  [data-dashboard-theme] .border-gray-300,
+  [data-dashboard-theme] .border-slate-200 {
+    border-color: #e2e8f0 !important;
+  }
+
+  [data-dashboard-theme] .text-gray-900,
+  [data-dashboard-theme] .text-gray-800,
+  [data-dashboard-theme] .text-gray-700,
+  [data-dashboard-theme] .text-slate-900 {
+    color: #1a202c !important;
+  }
+
+  [data-dashboard-theme] .bg-white .text-gray-900,
+  [data-dashboard-theme] .bg-white .text-gray-800,
+  [data-dashboard-theme] .bg-white .text-gray-700,
+  [data-dashboard-theme] .bg-white .text-gray-600,
+  [data-dashboard-theme] .bg-white .text-gray-500,
+  [data-dashboard-theme] .bg-white .text-slate-900,
+  [data-dashboard-theme] .bg-white .text-slate-600,
+  [data-dashboard-theme] .bg-white .text-slate-500,
+  [data-dashboard-theme] .bg-gray-50 .text-gray-900,
+  [data-dashboard-theme] .bg-gray-50 .text-gray-800,
+  [data-dashboard-theme] .bg-gray-50 .text-gray-700,
+  [data-dashboard-theme] .bg-gray-50 .text-gray-600,
+  [data-dashboard-theme] .bg-gray-50 .text-gray-500,
+  [data-dashboard-theme] .bg-gray-50 .text-slate-900,
+  [data-dashboard-theme] .bg-gray-50 .text-slate-600,
+  [data-dashboard-theme] .bg-gray-50 .text-slate-500,
+  [data-dashboard-theme] .bg-slate-50 .text-gray-900,
+  [data-dashboard-theme] .bg-slate-50 .text-gray-800,
+  [data-dashboard-theme] .bg-slate-50 .text-gray-700,
+  [data-dashboard-theme] .bg-slate-50 .text-gray-600,
+  [data-dashboard-theme] .bg-slate-50 .text-gray-500,
+  [data-dashboard-theme] .bg-slate-50 .text-slate-900,
+  [data-dashboard-theme] .bg-slate-50 .text-slate-600,
+  [data-dashboard-theme] .bg-slate-50 .text-slate-500 {
+    color: #1a202c !important;
+  }
+
+  [data-dashboard-theme] .text-gray-600,
+  [data-dashboard-theme] .text-gray-500,
+  [data-dashboard-theme] .text-slate-600,
+  [data-dashboard-theme] .text-slate-500 {
+    color: #4a5568 !important;
+  }
+
+  [data-dashboard-theme] .bg-primary-50,
+  [data-dashboard-theme] .bg-primary-100 {
+    background-color: #fff1eb !important;
+  }
+
+  [data-dashboard-theme] .text-primary-600,
+  [data-dashboard-theme] .text-primary-700,
+  [data-dashboard-theme] .text-primary-800 {
+    color: #ff4500 !important;
+  }
+
+  [data-dashboard-theme] .border-primary-100,
+  [data-dashboard-theme] .border-primary-500,
+  [data-dashboard-theme] .border-primary-600 {
+    border-color: rgba(255, 69, 0, 0.28) !important;
+  }
+
+  [data-dashboard-theme] .bg-primary-500,
+  [data-dashboard-theme] .bg-primary-600 {
+    background-color: #ff4500 !important;
+    color: #ffffff !important;
+  }
+
+  [data-dashboard-theme] .hover\:bg-primary-700:hover,
+  [data-dashboard-theme] .hover\:bg-primary-600:hover {
+    background-color: #e63e00 !important;
+    color: #ffffff !important;
+  }
+
+  [data-dashboard-theme] .focus\:ring-primary-200:focus,
+  [data-dashboard-theme] .focus\:ring-primary-300:focus,
+  [data-dashboard-theme] .focus\:ring-primary-500:focus {
+    --tw-ring-color: rgba(255, 69, 0, 0.24) !important;
+  }
+
+  [data-dashboard-theme] .focus\:border-primary-500:focus {
+    border-color: rgba(255, 69, 0, 0.4) !important;
+  }
+
+  [data-dashboard-theme] input,
+  [data-dashboard-theme] textarea,
+  [data-dashboard-theme] select {
+    background-color: #ffffff;
+    color: #1a202c;
+  }
+
+  [data-dashboard-theme] input::placeholder,
+  [data-dashboard-theme] textarea::placeholder {
+    color: #718096;
+  }
+
+  [data-dashboard-theme] .bg-highlight-50,
+  [data-dashboard-theme] .bg-highlight-100 {
+    background-color: #eef2ff !important;
+  }
+
+  [data-dashboard-theme] .text-highlight-600,
+  [data-dashboard-theme] .text-highlight-700,
+  [data-dashboard-theme] .text-highlight-800 {
+    color: #6366f1 !important;
+  }
+
+  [data-dashboard-theme] .border-highlight-200,
+  [data-dashboard-theme] .border-highlight-500,
+  [data-dashboard-theme] .border-highlight-600 {
+    border-color: rgba(99, 102, 241, 0.3) !important;
+  }
+
+  [data-dashboard-theme] .bg-highlight-500,
+  [data-dashboard-theme] .bg-highlight-600 {
+    background-color: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  [data-dashboard-theme] .hover\:bg-highlight-700:hover,
+  [data-dashboard-theme] .hover\:bg-highlight-600:hover {
+    background-color: #4f46e5 !important;
+    color: #ffffff !important;
+  }
+}
