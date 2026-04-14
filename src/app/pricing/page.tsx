@@ -72,7 +72,7 @@ export default function PricingPage() {
                     reporting, and support when you need it.
                   </p>
                   <div className="mt-8 flex flex-wrap gap-3">
-                    {['Core', 'Pro', 'Enterprise'].map((item) => (
+                    {['Starter', 'Growth', 'Scale'].map((item) => (
                       <span
                         key={item}
                         className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-[0_10px_28px_rgba(15,23,42,0.04)]"
@@ -150,7 +150,7 @@ export default function PricingPage() {
                       variant={plan.featured ? 'primary' : 'secondary'}
                       className="mt-8 w-full"
                     >
-                      {plan.name === 'Scale' ? 'Contact sales' : plan.featured ? 'Book Demo' : 'Get started'}
+                      {plan.name === 'Scale' ? 'Contact sales' : 'Book Demo'}
                       <ArrowRight size={16} />
                     </MarketingButton>
                   </article>

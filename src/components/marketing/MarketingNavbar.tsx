@@ -47,9 +47,6 @@ export default function MarketingNavbar() {
 
         {/* Desktop CTAs */}
         <div className="hidden items-center gap-3 lg:flex">
-          <MarketingButton href="/contact" variant="secondary">
-            Join Waitlist
-          </MarketingButton>
           <MarketingButton href="/contact">Book Demo</MarketingButton>
         </div>
 
@@ -120,9 +117,6 @@ export default function MarketingNavbar() {
                 </motion.div>
               ))}
               <div className="mt-3 flex flex-col gap-2 border-t border-slate-100 pt-4">
-                <MarketingButton href="/contact" className="w-full" variant="secondary">
-                  Join Waitlist
-                </MarketingButton>
                 <MarketingButton href="/contact" className="w-full" variant="primary">
                   Book Demo
                 </MarketingButton>

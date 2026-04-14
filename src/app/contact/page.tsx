@@ -235,8 +235,8 @@ export default function ContactPage() {
                   </MarketingBadge>
                   <p className="mt-4 text-base leading-8 text-slate-200">{finalCta.description}</p>
                 </div>
-                <MarketingButton href="/pricing">
-                  View Pricing
+                <MarketingButton href="/features">
+                  Explore Platform
                   <ArrowRight size={16} />
                 </MarketingButton>
               </div>

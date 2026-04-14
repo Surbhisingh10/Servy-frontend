@@ -29,7 +29,7 @@ export const resourceNavLinks = [
   { href: '/resources/centralize-online-orders', label: 'Centralize Online Orders' },
 ];
 
-export const trustLogos = ['UrbanFork', 'Mint Dining', 'NorthPlate', 'TableCraft'];
+export const trustLogos: string[] = [];
 
 export const socialLinks = [
   { href: 'https://www.linkedin.com/in/servy-world-26239b403?utm_source=share_via&utm_content=profile&utm_medium=member_ios', label: 'LinkedIn', icon: 'Linkedin' as const },
@@ -207,7 +207,7 @@ export const faqItems: FaqItem[] = [
   },
   {
     question: 'How quickly can I get started?',
-    answer: 'Most teams can review the setup and start within a short onboarding flow, usually with a clear rollout timeline.',
+    answer: 'Most outlets go live in one onboarding session. We map your menu, train the team, and stay available for go-live day.',
   },
   {
     question: 'Is there a demo available?',
@@ -215,7 +215,7 @@ export const faqItems: FaqItem[] = [
   },
   {
     question: 'Is pricing and support clear up front?',
-    answer: 'Yes. The site can surface transparent pricing, support expectations, onboarding time, and outlet-type coverage.',
+    answer: 'Yes. Pricing, support SLA, onboarding steps, and outlet-type coverage are all listed on this site before any sales conversation.',
   },
   {
     question: 'Does it support multi-outlet management?',
