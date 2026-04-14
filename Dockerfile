@@ -23,6 +23,8 @@ COPY . .
 
 # Set environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_OUTPUT_STANDALONE=true
+ENV NEXT_DIST_DIR=.next-local
 
 # Build application
 RUN npm run build
@@ -41,8 +43,8 @@ RUN addgroup -g 1001 -S nodejs && \
 
 # Copy necessary files
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.next-local/standalone ./
+COPY --from=builder /app/.next-local/static ./.next-local/static
 
 # Set permissions
 RUN chown -R nextjs:nodejs /app

@@ -27,7 +27,13 @@ interface Order {
   }>;
 }
 
-export function useOrders(status?: string, platform: string = 'ALL') {
+export function useOrders(
+  status?: string,
+  platform: string = 'ALL',
+  outletId: string = 'ALL',
+  dateFrom?: string,
+  dateTo?: string,
+) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +41,7 @@ export function useOrders(status?: string, platform: string = 'ALL') {
   const fetchOrders = useCallback(async (silent = false) => {
     try {
       if (!silent) setLoading(true);
-      const data = await api.getOrders(status, platform);
+      const data = await api.getOrders(status, platform, outletId, dateFrom, dateTo);
       setOrders(data);
       setError(null);
     } catch (err: any) {
@@ -44,7 +50,7 @@ export function useOrders(status?: string, platform: string = 'ALL') {
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [status, platform]);
+  }, [status, platform, outletId, dateFrom, dateTo]);
 
   useEffect(() => {
     fetchOrders();

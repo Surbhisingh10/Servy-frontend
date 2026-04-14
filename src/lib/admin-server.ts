@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { fetchBackend, getBackendBaseUrl } from './backend-fetch';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+const API_URL = getBackendBaseUrl();
 
 export function getAdminToken() {
   return cookies().get('admin_token')?.value;
@@ -13,7 +14,7 @@ export async function fetchAdmin<T>(path: string, init?: RequestInit): Promise<T
     redirect('/admin/login');
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetchBackend(`${API_URL}${path}`, {
     ...init,
     cache: 'no-store',
     headers: {

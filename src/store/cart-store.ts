@@ -17,6 +17,9 @@ interface CartState {
   restaurantSlug: string | null;
   orderType: 'DINE_IN' | 'TAKEAWAY' | null;
   tableNumber?: string;
+  qrCodeId?: string;
+  qrCode?: string;
+  outletId?: string;
   addItem: (item: CartItem) => void;
   removeItem: (menuItemId: string) => void;
   updateQuantity: (menuItemId: string, quantity: number) => void;
@@ -24,6 +27,9 @@ interface CartState {
   setRestaurant: (restaurantId: string) => void;
   setRestaurantSlug: (slug: string) => void;
   setOrderType: (type: 'DINE_IN' | 'TAKEAWAY', tableNumber?: string) => void;
+  setTableNumber: (tableNumber?: string) => void;
+  setQrContext: (context: { qrCodeId?: string; qrCode?: string; tableNumber?: string; outletId?: string }) => void;
+  clearQrContext: () => void;
   getTotal: () => number;
   getItemCount: () => number;
 }
@@ -36,6 +42,9 @@ export const useCartStore = create<CartState>()(
     restaurantSlug: null,
     orderType: null,
     tableNumber: undefined,
+    qrCodeId: undefined,
+    qrCode: undefined,
+    outletId: undefined,
 
       addItem: (item) => {
         const state = get();
@@ -72,10 +81,35 @@ export const useCartStore = create<CartState>()(
       },
 
       clearCart: () => {
-        set({ items: [], orderType: null, tableNumber: undefined });
+        set({
+          items: [],
+          orderType: null,
+          tableNumber: undefined,
+          qrCodeId: undefined,
+          qrCode: undefined,
+          outletId: undefined,
+        });
       },
 
       setRestaurant: (restaurantId) => {
+        const currentRestaurantId = get().restaurantId;
+
+        // Keep carts isolated per restaurant so items from one menu do not
+        // accidentally carry over into another restaurant's checkout flow.
+        if (currentRestaurantId && currentRestaurantId !== restaurantId) {
+          set({
+            restaurantId,
+            restaurantSlug: null,
+            items: [],
+            orderType: null,
+            tableNumber: undefined,
+            qrCodeId: undefined,
+            qrCode: undefined,
+            outletId: undefined,
+          });
+          return;
+        }
+
         set({ restaurantId });
       },
 
@@ -85,6 +119,29 @@ export const useCartStore = create<CartState>()(
 
       setOrderType: (type, tableNumber) => {
         set({ orderType: type, tableNumber });
+      },
+
+      setTableNumber: (tableNumber) => {
+        set({ tableNumber });
+      },
+
+      setQrContext: ({ qrCodeId, qrCode, tableNumber, outletId }) => {
+        set({
+          qrCodeId,
+          qrCode,
+          tableNumber,
+          outletId,
+          orderType: 'DINE_IN',
+        });
+      },
+
+      clearQrContext: () => {
+        set({
+          qrCodeId: undefined,
+          qrCode: undefined,
+          tableNumber: undefined,
+          outletId: undefined,
+        });
       },
 
       getTotal: () => {

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { FormEvent, useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth-store';
@@ -11,6 +10,7 @@ import toast from 'react-hot-toast';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
+import { resolveMediaUrl } from '@/lib/media';
 
 interface Category {
   id: string;
@@ -114,6 +114,8 @@ export default function MenuPage() {
       setLoading(false);
     }
   }, [user?.restaurantId]);
+
+  const resolveItemImage = (image?: string | null) => resolveMediaUrl(image);
 
   useEffect(() => {
     fetchMenu();
@@ -362,15 +364,14 @@ export default function MenuPage() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-xl p-4 shadow-sm border border-gray-200"
           >
-            {item.image ? (
+            {resolveItemImage(item.image) ? (
               <div className="relative w-full h-40 rounded-lg overflow-hidden bg-gray-100 mb-4">
-                <Image
-                  src={item.image}
+                <img
+                  src={resolveItemImage(item.image)!}
                   alt={item.name}
-                  fill
-                  unoptimized
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
                 />
               </div>
             ) : (

@@ -135,6 +135,22 @@ export default function StaffPage() {
     }
   };
 
+  const handleDeleteStaff = async (userId: string, name: string) => {
+    if (!canManageStaff) {
+      toast.error('Only owner or admin can remove staff');
+      return;
+    }
+    if (!window.confirm(`Remove ${name} from the team? This cannot be undone.`)) return;
+    try {
+      await api.deleteUser(userId);
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      toast.success('Staff member removed');
+    } catch (error: unknown) {
+      const e = error as { response?: { data?: { message?: string } } };
+      toast.error(e?.response?.data?.message || 'Failed to remove staff member');
+    }
+  };
+
   const handleUpdateStaff = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!canManageStaff) {
@@ -183,7 +199,6 @@ export default function StaffPage() {
     ADMIN: 'bg-blue-100 text-blue-800',
     MANAGER: 'bg-green-100 text-green-800',
     STAFF: 'bg-gray-100 text-gray-800',
-    WAITER: 'bg-orange-100 text-orange-800',
   };
 
   return (
@@ -294,7 +309,12 @@ export default function StaffPage() {
                       >
                         <Edit size={16} />
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => handleDeleteStaff(user.id, `${user.firstName} ${user.lastName || ''}`.trim())}
+                        disabled={!canManageStaff || user.role === 'OWNER'}
+                        className="text-red-600 hover:text-red-900 disabled:cursor-not-allowed disabled:text-gray-300"
+                        title={user.role === 'OWNER' ? 'Cannot remove owner' : !canManageStaff ? 'Only owner/admin can remove staff' : 'Remove staff member'}
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -358,8 +378,6 @@ export default function StaffPage() {
               className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="STAFF">Staff</option>
-              <option value="WAITER">Waiter</option>
-              <option value="CASHIER">Cashier</option>
               <option value="MANAGER">Manager</option>
               <option value="ADMIN">Admin</option>
             </select>
@@ -408,8 +426,6 @@ export default function StaffPage() {
               className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="STAFF">Staff</option>
-              <option value="WAITER">Waiter</option>
-              <option value="CASHIER">Cashier</option>
               <option value="MANAGER">Manager</option>
               <option value="ADMIN">Admin</option>
               <option value="OWNER">Owner</option>

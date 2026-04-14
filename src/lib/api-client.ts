@@ -1,6 +1,23 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { handleApiError, ApiError } from './errors';
 import toast from 'react-hot-toast';
+import type { AppNotification } from './admin-types';
+
+export interface SalesReport {
+  summary: {
+    totalRevenue: number;
+    totalOrders: number;
+    avgOrderValue: number;
+    completedOrders: number;
+    cancelledOrders: number;
+  };
+  revenueByPeriod: { label: string; revenue: number; orders: number }[];
+  byPaymentMethod: { method: string; amount: number; count: number }[];
+  byOrderType: { type: string; amount: number; count: number }[];
+  topItems: { name: string; quantity: number; revenue: number }[];
+  dateFrom: string;
+  dateTo: string;
+}
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
 
@@ -38,6 +55,11 @@ class ApiClient {
           if (slugMatch) {
             config.headers['x-restaurant-slug'] = slugMatch[1];
           }
+
+          const selectedOutletId = localStorage.getItem('selected_outlet_id');
+          if (selectedOutletId && selectedOutletId !== 'ALL') {
+            config.headers['x-outlet-id'] = selectedOutletId;
+          }
         }
 
         return config;
@@ -70,6 +92,11 @@ class ApiClient {
 
         if (apiError.statusCode === 429) {
           toast.error('Too many requests. Please try again later.');
+          return Promise.reject(apiError);
+        }
+
+        if (apiError.statusCode === 0) {
+          toast.error(apiError.message);
           return Promise.reject(apiError);
         }
 
@@ -125,10 +152,32 @@ class ApiClient {
   }
 
   async login(email: string, password: string) {
-    const response = await this.client.post('/auth/login', { email, password });
-    if (response.data.access_token) {
-      this.setToken(response.data.access_token);
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok || !data?.data?.access_token) {
+      throw new Error(data?.message || 'Invalid credentials');
     }
+
+    if (data.data.access_token) {
+      this.setToken(data.data.access_token);
+    }
+    return data.data;
+  }
+
+  async changePassword(currentPassword: string, newPassword: string, confirmPassword: string) {
+    const response = await this.client.post('/auth/change-password', {
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
     return response.data;
   }
 
@@ -140,6 +189,7 @@ class ApiClient {
     phone?: string;
     restaurantId: string;
     restaurantName?: string;
+    outletNames?: string[];
   }) {
     const response = await this.client.post('/auth/register', data);
     if (response.data.access_token) {
@@ -217,6 +267,40 @@ class ApiClient {
     );
   }
 
+  async getMyRestaurant() {
+    return this.deduplicatedRequest('restaurant:me', () =>
+      this.client.get('/restaurants/me').then((res) => res.data),
+    );
+  }
+
+  async getMySubscription() {
+    const response = await this.client.get('/restaurants/me/subscription');
+    return response.data;
+  }
+
+  async getAvailablePlans() {
+    const response = await this.client.get('/restaurants/me/plans');
+    return response.data;
+  }
+
+  async upgradePlan(planId: string) {
+    const response = await this.client.post('/restaurants/me/subscription/upgrade', { planId });
+    return response.data;
+  }
+
+  async updateRestaurant(id: string, data: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  }) {
+    const response = await this.client.patch(`/restaurants/${id}`, data);
+    return response.data;
+  }
+
   async getRestaurantBySlug(slug: string) {
     return this.deduplicatedRequest(`restaurant:slug:${slug}`, () =>
       this.client.get(`/restaurants/slug/${slug}`).then((res) => res.data),
@@ -269,6 +353,28 @@ class ApiClient {
     );
   }
 
+  async getMenuItem(restaurantIdOrSlug: string, itemId: string) {
+    const isSlug = !restaurantIdOrSlug.match(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+
+    if (isSlug) {
+      return this.deduplicatedRequest(`item:${restaurantIdOrSlug}:${itemId}`, () =>
+        this.client
+          .get(`/menu/items/${itemId}`, {
+            headers: { 'x-restaurant-slug': restaurantIdOrSlug },
+          })
+          .then((res) => res.data),
+      );
+    }
+
+    return this.deduplicatedRequest(`item:${restaurantIdOrSlug}:${itemId}`, () =>
+      this.client
+        .get(`/menu/items/${itemId}?restaurantId=${restaurantIdOrSlug}`)
+        .then((res) => res.data),
+    );
+  }
+
   async createOrder(restaurantId: string, orderData: any, restaurantSlug?: string) {
     const params = new URLSearchParams({ restaurantId });
     if (restaurantSlug) {
@@ -295,10 +401,38 @@ class ApiClient {
     return response.data;
   }
 
-  async getOrders(status?: string, platform?: string) {
+  async getWhatsappConfig() {
+    const response = await this.client.get('/restaurants/me/whatsapp-config');
+    return response.data;
+  }
+
+  async updateWhatsappConfig(data: {
+    accessToken: string;
+    phoneNumberId: string;
+    apiVersion?: string;
+    businessAccountId?: string;
+  }) {
+    const response = await this.client.patch('/restaurants/me/whatsapp-config', data);
+    return response.data;
+  }
+
+  async disconnectWhatsappConfig() {
+    const response = await this.client.delete('/restaurants/me/whatsapp-config');
+    return response.data;
+  }
+
+  async sendWhatsappTestMessage(phone: string) {
+    const response = await this.client.post('/restaurants/me/whatsapp-config/test', { phone });
+    return response.data;
+  }
+
+  async getOrders(status?: string, platform?: string, outletId?: string, dateFrom?: string, dateTo?: string) {
     const params = new URLSearchParams();
     if (status) params.set('status', status);
     if (platform && platform !== 'ALL') params.set('platform', platform);
+    if (outletId && outletId !== 'ALL') params.set('outletId', outletId);
+    if (dateFrom) params.set('dateFrom', dateFrom);
+    if (dateTo) params.set('dateTo', dateTo);
     const url = params.toString() ? `/orders?${params.toString()}` : '/orders';
     const response = await this.client.get(url);
     return response.data;
@@ -342,6 +476,7 @@ class ApiClient {
     const response = await this.client.post(`/bookings?restaurantId=${restaurantId}`, bookingData);
     return response.data;
   }
+
 
   async getBookings(date?: string) {
     const url = date ? `/bookings?date=${date}` : '/bookings';
@@ -434,12 +569,26 @@ class ApiClient {
     return response.data;
   }
 
+  async deleteQrCode(id: string) {
+    const response = await this.client.delete(`/qr-codes/${id}`);
+    return response.data;
+  }
+
   async getQrCodeByCode(code: string, restaurantId: string) {
     return this.deduplicatedRequest(`qrcode:${code}:${restaurantId}`, () =>
       this.client
         .get(`/qr-codes/code/${code}?restaurantId=${restaurantId}`)
         .then((res) => res.data),
     );
+  }
+
+  async getQrCodeByPublicCode(code: string, restaurantSlug: string) {
+    const restaurant = await this.getRestaurantBySlug(restaurantSlug);
+    if (!restaurant?.id) {
+      throw new Error('Restaurant context is missing');
+    }
+
+    return this.getQrCodeByCode(code, restaurant.id);
   }
 
   async getIntegrations() {
@@ -459,6 +608,227 @@ class ApiClient {
     const response = await this.client.patch(`/integrations/${platform}/disconnect`);
     return response.data;
   }
+
+  async getOrganization() {
+    const response = await this.client.get('/organizations/me');
+    return response.data;
+  }
+
+  async getOutlets() {
+    const response = await this.client.get('/outlets');
+    return response.data;
+  }
+
+  async getOutletSummary() {
+    const response = await this.client.get('/outlets/summary');
+    return response.data;
+  }
+
+  async createOutlet(data: {
+    name: string;
+    slug?: string;
+    code?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    zipCode?: string;
+  }) {
+    const response = await this.client.post('/outlets', data);
+    return response.data;
+  }
+
+  async updateOutlet(id: string, data: any) {
+    const response = await this.client.patch(`/outlets/${id}`, data);
+    return response.data;
+  }
+
+  async deleteOutlet(id: string) {
+    const response = await this.client.delete(`/outlets/${id}`);
+    return response.data;
+  }
+
+  async createSupportRequest(
+    data: {
+      qrCodeId?: string;
+      tableNumber?: string;
+      requestType: 'WAITER' | 'BILL' | 'WATER' | 'CLEANING' | 'OTHER';
+      priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    },
+    restaurantSlug?: string,
+  ) {
+      const response = await this.client.post('/support-requests', data, {
+        headers: restaurantSlug ? { 'x-restaurant-slug': restaurantSlug } : undefined,
+      });
+      return response.data;
+    }
+
+    async getSupportRequests(status?: string, outletId?: string) {
+      const params = new URLSearchParams();
+      if (status) params.set('status', status);
+    if (outletId && outletId !== 'ALL') params.set('outletId', outletId);
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+    const response = await this.client.get(`/support-requests${suffix}`);
+    return response.data;
+  }
+
+    async resolveSupportRequest(id: string) {
+      const response = await this.client.patch(`/support-requests/${id}/status`, {
+        status: 'RESOLVED',
+      });
+      return response.data;
+    }
+
+    async assignSupportRequest(id: string, assignedToId?: string | null) {
+      const response = await this.client.patch(`/support-requests/${id}/assign`, {
+        assignedToId: assignedToId || null,
+      });
+      return response.data;
+    }
+
+    async updateSupportRequestStatus(
+      id: string,
+      status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED',
+    ) {
+      const response = await this.client.patch(`/support-requests/${id}/status`, { status });
+      return response.data;
+    }
+
+  async getNotifications(limit?: number): Promise<AppNotification[]> {
+    const suffix = limit ? `?limit=${limit}` : '';
+    const response = await this.client.get(`/notifications${suffix}`);
+    return response.data;
+  }
+
+  async getInventoryItems(outletId?: string) {
+    const params = new URLSearchParams();
+    if (outletId && outletId !== 'ALL') {
+      params.set('outletId', outletId);
+    }
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+    const response = await this.client.get(`/inventory${suffix}`);
+    return response.data;
+  }
+
+  async getInventoryItem(id: string) {
+    const response = await this.client.get(`/inventory/${id}`);
+    return response.data;
+  }
+
+  async createInventoryItem(data: {
+    name: string;
+    unit: string;
+    currentQuantity: number;
+    minimumQuantity: number;
+    outletId?: string;
+  }) {
+    const response = await this.client.post('/inventory', data);
+    return response.data;
+  }
+
+  async updateInventoryItem(
+    id: string,
+    data: {
+      name?: string;
+      unit?: string;
+      currentQuantity?: number;
+      minimumQuantity?: number;
+      outletId?: string;
+    },
+  ) {
+    const response = await this.client.patch(`/inventory/${id}`, data);
+    return response.data;
+  }
+
+  async deleteInventoryItem(id: string) {
+    const response = await this.client.delete(`/inventory/${id}`);
+    return response.data;
+  }
+
+  async updateInventoryStock(
+    id: string,
+    data: {
+      type: 'ADD' | 'REDUCE';
+      quantity: number;
+      note?: string;
+    },
+  ) {
+    const response = await this.client.post(`/inventory/${id}/transaction`, data);
+    return response.data;
+  }
+
+  async getInventoryTransactions(id: string) {
+    const response = await this.client.get(`/inventory/${id}/transactions`);
+    return response.data;
+  }
+
+  async getInventoryMode() {
+    const response = await this.client.get('/inventory/settings/mode');
+    return response.data as { inventoryMode: 'MANUAL' | 'RECIPE_BASED' };
+  }
+
+  async setInventoryMode(mode: 'MANUAL' | 'RECIPE_BASED') {
+    const response = await this.client.patch('/inventory/settings/mode', { mode });
+    return response.data as { inventoryMode: 'MANUAL' | 'RECIPE_BASED' };
+  }
+
+  async getRecipes() {
+    const response = await this.client.get('/inventory/recipes');
+    return response.data;
+  }
+
+  async getRecipe(id: string) {
+    const response = await this.client.get(`/inventory/recipes/${id}`);
+    return response.data;
+  }
+
+  async createRecipe(data: {
+    name: string;
+    menuItemId?: string;
+    ingredients: { inventoryItemId: string; quantity: number }[];
+  }) {
+    const response = await this.client.post('/inventory/recipes', data);
+    return response.data;
+  }
+
+  async updateRecipe(
+    id: string,
+    data: {
+      name?: string;
+      menuItemId?: string;
+      ingredients?: { inventoryItemId: string; quantity: number }[];
+    },
+  ) {
+    const response = await this.client.patch(`/inventory/recipes/${id}`, data);
+    return response.data;
+  }
+
+  async deleteRecipe(id: string) {
+    const response = await this.client.delete(`/inventory/recipes/${id}`);
+    return response.data;
+  }
+
+  async getSalesReport(params: {
+    period: 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom';
+    dateFrom?: string;
+    dateTo?: string;
+    outletId?: string;
+  }) {
+    const response = await this.client.get('/reports/sales', { params });
+    return response.data as SalesReport;
+  }
+
+  async markNotificationRead(id: string) {
+    const response = await this.client.patch(`/notifications/${id}/read`);
+    return response.data;
+  }
+
+  async markAllNotificationsRead() {
+    const response = await this.client.patch('/notifications/read-all');
+    return response.data;
+  }
+
 }
 
 export const api = new ApiClient();

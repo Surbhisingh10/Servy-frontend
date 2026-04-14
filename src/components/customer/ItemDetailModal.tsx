@@ -4,9 +4,9 @@ import { useState } from 'react';
 import BottomSheet from './BottomSheet';
 import Button from '@/components/ui/Button';
 import { Plus, Minus } from 'lucide-react';
-import Image from 'next/image';
 import { useCartStore } from '@/store/cart-store';
 import toast from 'react-hot-toast';
+import { resolveMediaUrl } from '@/lib/media';
 
 interface MenuItem {
   id: string;
@@ -39,6 +39,7 @@ export default function ItemDetailModal({ item, isOpen, onClose }: ItemDetailMod
     currency: 'INR',
     maximumFractionDigits: 2,
   });
+  const imageSrc = resolveMediaUrl(item.image);
 
   const handleAddToCart = () => {
     addItem({
@@ -60,9 +61,15 @@ export default function ItemDetailModal({ item, isOpen, onClose }: ItemDetailMod
     <BottomSheet isOpen={isOpen} onClose={onClose} title={item.name}>
       <div className="space-y-6">
         {/* Image */}
-        {item.image && (
+        {imageSrc && (
           <div className="relative w-full h-48 rounded-xl overflow-hidden bg-gray-100 -mx-6">
-            <Image src={item.image} alt={item.name} fill className="object-cover" />
+            <img
+              src={imageSrc}
+              alt={item.name}
+              className="h-full w-full object-cover"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            />
           </div>
         )}
 

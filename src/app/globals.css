@@ -4,9 +4,105 @@
 
 @layer base {
   :root {
-    --background: 220 23% 98%;
-    --foreground: 216 25% 18%;
+    --page-bg: #f8fafc;
+    --page-fg: #18212f;
     --border: 220 16% 90%;
+    --font-inter: 'Inter', sans-serif;
+    --theme-primary-50: #eff6ff;
+    --theme-primary-100: #dbeafe;
+    --theme-primary-200: #bfdbfe;
+    --theme-primary-300: #93c5fd;
+    --theme-primary-400: #60a5fa;
+    --theme-primary-500: #3b82f6;
+    --theme-primary-600: #2563eb;
+    --theme-primary-700: #1d4ed8;
+    --theme-primary-800: #1e40af;
+    --theme-primary-900: #1e3a8a;
+    --theme-highlight-50: #eef2ff;
+    --theme-highlight-100: #e0e7ff;
+    --theme-highlight-200: #c7d2fe;
+    --theme-highlight-300: #a5b4fc;
+    --theme-highlight-400: #818cf8;
+    --theme-highlight-500: #6366f1;
+    --theme-highlight-600: #4f46e5;
+    --theme-highlight-700: #4338ca;
+    --theme-highlight-800: #3730a3;
+    --theme-highlight-900: #312e81;
+  }
+
+  html[data-platform-theme='pastel-blue'] {
+    --page-bg: #f7fbff;
+    --page-fg: #16304d;
+    --theme-primary-50: #eff6ff;
+    --theme-primary-100: #dbeafe;
+    --theme-primary-200: #bfdbfe;
+    --theme-primary-300: #93c5fd;
+    --theme-primary-400: #60a5fa;
+    --theme-primary-500: #3b82f6;
+    --theme-primary-600: #2563eb;
+    --theme-primary-700: #1d4ed8;
+    --theme-primary-800: #1e40af;
+    --theme-primary-900: #1e3a8a;
+    --theme-highlight-50: #e0f2fe;
+    --theme-highlight-100: #bae6fd;
+    --theme-highlight-200: #7dd3fc;
+    --theme-highlight-300: #38bdf8;
+    --theme-highlight-400: #0ea5e9;
+    --theme-highlight-500: #0284c7;
+    --theme-highlight-600: #0369a1;
+    --theme-highlight-700: #075985;
+    --theme-highlight-800: #0c4a6e;
+    --theme-highlight-900: #082f49;
+  }
+
+  html[data-platform-theme='emerald-green'] {
+    --page-bg: #f5fbf8;
+    --page-fg: #18352d;
+    --theme-primary-50: #ecfdf5;
+    --theme-primary-100: #d1fae5;
+    --theme-primary-200: #a7f3d0;
+    --theme-primary-300: #6ee7b7;
+    --theme-primary-400: #34d399;
+    --theme-primary-500: #10b981;
+    --theme-primary-600: #059669;
+    --theme-primary-700: #047857;
+    --theme-primary-800: #065f46;
+    --theme-primary-900: #064e3b;
+    --theme-highlight-50: #f0fdf4;
+    --theme-highlight-100: #dcfce7;
+    --theme-highlight-200: #bbf7d0;
+    --theme-highlight-300: #86efac;
+    --theme-highlight-400: #4ade80;
+    --theme-highlight-500: #22c55e;
+    --theme-highlight-600: #16a34a;
+    --theme-highlight-700: #15803d;
+    --theme-highlight-800: #166534;
+    --theme-highlight-900: #14532d;
+  }
+
+  html[data-platform-theme='saffron'] {
+    --page-bg: #fffaf6;
+    --page-fg: #1a202c;
+    --theme-primary-50: #fff1eb;
+    --theme-primary-100: #ffd8c7;
+    --theme-primary-200: #ffb08e;
+    --theme-primary-300: #ff8960;
+    --theme-primary-400: #ff6330;
+    --theme-primary-500: #ff4500;
+    --theme-primary-600: #e63e00;
+    --theme-primary-700: #bf3400;
+    --theme-primary-800: #992900;
+    --theme-primary-900: #7a2100;
+    --theme-highlight-50: #fff7ed;
+    --theme-highlight-100: #ffedd5;
+    --theme-highlight-200: #fed7aa;
+    --theme-highlight-300: #fdba74;
+    --theme-highlight-400: #fb923c;
+    --theme-highlight-500: #f97316;
+    --theme-highlight-600: #ea580c;
+    --theme-highlight-700: #c2410c;
+    --theme-highlight-800: #9a3412;
+    --theme-highlight-900: #7c2d12;
   }
 
   * {
@@ -14,28 +110,13 @@
   }
 
   body {
-    background-color: #f9fafb;
-    color: #1a202c;
+    background-color: var(--page-bg);
+    color: var(--page-fg);
+    font-family: var(--font-inter), sans-serif;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-space-grotesk), sans-serif;
-  }
-
-  body,
-  p,
-  span,
-  a,
-  button,
-  input,
-  textarea,
-  select {
-    font-family: var(--font-manrope), sans-serif;
+  html {
+    scroll-behavior: smooth;
   }
 }
 
@@ -76,8 +157,8 @@
 
 @layer utilities {
   [data-dashboard-theme] {
-    background-color: #f9fafb;
-    color: #1a202c;
+    background-color: var(--page-bg);
+    color: var(--page-fg);
   }
 
   [data-dashboard-theme] main {
@@ -145,43 +226,59 @@
     color: #4a5568 !important;
   }
 
+  html[data-platform-theme] .bg-primary-50,
+  html[data-platform-theme] .bg-primary-100,
   [data-dashboard-theme] .bg-primary-50,
   [data-dashboard-theme] .bg-primary-100 {
-    background-color: #fff1eb !important;
+    background-color: var(--theme-primary-50) !important;
   }
 
+  html[data-platform-theme] .text-primary-600,
+  html[data-platform-theme] .text-primary-700,
+  html[data-platform-theme] .text-primary-800,
   [data-dashboard-theme] .text-primary-600,
   [data-dashboard-theme] .text-primary-700,
   [data-dashboard-theme] .text-primary-800 {
-    color: #ff4500 !important;
+    color: var(--theme-primary-600) !important;
   }
 
+  html[data-platform-theme] .border-primary-100,
+  html[data-platform-theme] .border-primary-500,
+  html[data-platform-theme] .border-primary-600,
   [data-dashboard-theme] .border-primary-100,
   [data-dashboard-theme] .border-primary-500,
   [data-dashboard-theme] .border-primary-600 {
-    border-color: rgba(255, 69, 0, 0.28) !important;
+    border-color: color-mix(in srgb, var(--theme-primary-500) 28%, transparent) !important;
   }
 
+  html[data-platform-theme] .bg-primary-500,
+  html[data-platform-theme] .bg-primary-600,
   [data-dashboard-theme] .bg-primary-500,
   [data-dashboard-theme] .bg-primary-600 {
-    background-color: #ff4500 !important;
+    background-color: var(--theme-primary-500) !important;
     color: #ffffff !important;
   }
 
+  html[data-platform-theme] .hover\:bg-primary-700:hover,
+  html[data-platform-theme] .hover\:bg-primary-600:hover,
   [data-dashboard-theme] .hover\:bg-primary-700:hover,
   [data-dashboard-theme] .hover\:bg-primary-600:hover {
-    background-color: #e63e00 !important;
+    background-color: var(--theme-primary-600) !important;
     color: #ffffff !important;
   }
 
+  html[data-platform-theme] .focus\:ring-primary-200:focus,
+  html[data-platform-theme] .focus\:ring-primary-300:focus,
+  html[data-platform-theme] .focus\:ring-primary-500:focus,
   [data-dashboard-theme] .focus\:ring-primary-200:focus,
   [data-dashboard-theme] .focus\:ring-primary-300:focus,
   [data-dashboard-theme] .focus\:ring-primary-500:focus {
-    --tw-ring-color: rgba(255, 69, 0, 0.24) !important;
+    --tw-ring-color: color-mix(in srgb, var(--theme-primary-500) 24%, transparent) !important;
   }
 
+  html[data-platform-theme] .focus\:border-primary-500:focus,
   [data-dashboard-theme] .focus\:border-primary-500:focus {
-    border-color: rgba(255, 69, 0, 0.4) !important;
+    border-color: color-mix(in srgb, var(--theme-primary-500) 40%, transparent) !important;
   }
 
   [data-dashboard-theme] input,
@@ -196,32 +293,44 @@
     color: #718096;
   }
 
+  html[data-platform-theme] .bg-highlight-50,
+  html[data-platform-theme] .bg-highlight-100,
   [data-dashboard-theme] .bg-highlight-50,
   [data-dashboard-theme] .bg-highlight-100 {
-    background-color: #eef2ff !important;
+    background-color: var(--theme-highlight-50) !important;
   }
 
+  html[data-platform-theme] .text-highlight-600,
+  html[data-platform-theme] .text-highlight-700,
+  html[data-platform-theme] .text-highlight-800,
   [data-dashboard-theme] .text-highlight-600,
   [data-dashboard-theme] .text-highlight-700,
   [data-dashboard-theme] .text-highlight-800 {
-    color: #6366f1 !important;
+    color: var(--theme-highlight-600) !important;
   }
 
+  html[data-platform-theme] .border-highlight-200,
+  html[data-platform-theme] .border-highlight-500,
+  html[data-platform-theme] .border-highlight-600,
   [data-dashboard-theme] .border-highlight-200,
   [data-dashboard-theme] .border-highlight-500,
   [data-dashboard-theme] .border-highlight-600 {
-    border-color: rgba(99, 102, 241, 0.3) !important;
+    border-color: color-mix(in srgb, var(--theme-highlight-500) 30%, transparent) !important;
   }
 
+  html[data-platform-theme] .bg-highlight-500,
+  html[data-platform-theme] .bg-highlight-600,
   [data-dashboard-theme] .bg-highlight-500,
   [data-dashboard-theme] .bg-highlight-600 {
-    background-color: #6366f1 !important;
+    background-color: var(--theme-highlight-500) !important;
     color: #ffffff !important;
   }
 
+  html[data-platform-theme] .hover\:bg-highlight-700:hover,
+  html[data-platform-theme] .hover\:bg-highlight-600:hover,
   [data-dashboard-theme] .hover\:bg-highlight-700:hover,
   [data-dashboard-theme] .hover\:bg-highlight-600:hover {
-    background-color: #4f46e5 !important;
+    background-color: var(--theme-highlight-600) !important;
     color: #ffffff !important;
   }
 }

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,20 +33,26 @@ export default function LoginPage() {
       await login(data.email, data.password);
       toast.success('Login successful!');
       router.push('/dashboard');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed');
+    } catch (error: unknown) {
+      const err = error as { message?: string; response?: { data?: { message?: string } } };
+      toast.error(err?.message || err?.response?.data?.message || 'Login failed');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
+          <p className="mt-3 text-center text-sm text-gray-600">
+            If your restaurant onboarding is pending or was rejected, sign in here to view the
+            latest status and next steps.
+          </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             <Input
               label="Email address"

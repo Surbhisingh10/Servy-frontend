@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { RestaurantListItem } from '@/lib/admin-types';
+import RestaurantEditModal from './RestaurantEditModal';
 
 export default function RestaurantRowActions({ restaurant }: { restaurant: RestaurantListItem }) {
   const router = useRouter();
@@ -21,6 +22,23 @@ export default function RestaurantRowActions({ restaurant }: { restaurant: Resta
   const impersonate = async () => {
     await fetch(`/api/admin/restaurants/${restaurant.id}/impersonate`, { method: 'POST' });
     alert('Impersonation context prepared');
+  };
+
+  const removeRestaurant = async () => {
+    const confirmed = window.confirm(
+      `Delete ${restaurant.name}? This will permanently remove the restaurant and its platform data.`,
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    const response = await fetch(`/api/admin/restaurants/${restaurant.id}`, { method: 'DELETE' });
+    if (!response.ok) {
+      const json = await response.json().catch(() => null);
+      window.alert(json?.message || 'Failed to delete restaurant');
+      return;
+    }
+    router.refresh();
   };
 
   const reviewOnboarding = async (action: 'APPROVE' | 'REJECT') => {
@@ -43,6 +61,13 @@ export default function RestaurantRowActions({ restaurant }: { restaurant: Resta
 
   return (
     <div className="flex gap-2">
+      <RestaurantEditModal
+        restaurantId={restaurant.id}
+        initialValues={{
+          name: restaurant.name,
+          email: restaurant.email,
+        }}
+      />
       <Button size="sm" variant="outline" onClick={() => router.push(`/admin/restaurants/${restaurant.id}`)}>
         View
       </Button>
@@ -61,6 +86,9 @@ export default function RestaurantRowActions({ restaurant }: { restaurant: Resta
       </Button>
       <Button size="sm" variant="outline" onClick={impersonate}>
         Impersonate
+      </Button>
+      <Button size="sm" variant="outline" onClick={removeRestaurant}>
+        Delete
       </Button>
     </div>
   );

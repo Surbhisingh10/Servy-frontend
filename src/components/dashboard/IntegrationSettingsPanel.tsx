@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 import { IntegrationStatusRow, Platform } from '@/types/integration';
+import WhatsappSettingsPanel from './WhatsappSettingsPanel';
 
 export default function IntegrationSettingsPanel() {
   const [rows, setRows] = useState<IntegrationStatusRow[]>([]);
@@ -77,6 +78,7 @@ export default function IntegrationSettingsPanel() {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold text-gray-900">Online Ordering Integrations</h2>
+      <WhatsappSettingsPanel />
       {loading ? (
         <p className="text-sm text-gray-600">Loading integrations...</p>
       ) : (

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth-store';
-import { Loader2, QrCode, Copy, Download } from 'lucide-react';
+import { Loader2, QrCode, Copy, Download, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -49,7 +49,7 @@ export default function QrCodesPage() {
       try {
         setLoading(true);
         const [restaurant, qrs] = await Promise.all([
-          api.getRestaurant(user.restaurantId),
+          api.getMyRestaurant(),
           api.getQrCodes(),
         ]);
         setRestaurantSlug(restaurant?.slug || '');
@@ -99,9 +99,7 @@ export default function QrCodesPage() {
 
   const rows = useMemo(() => {
     return qrCodes.map((item) => {
-      const menuUrl = `${origin}/restaurant/${restaurantSlug}/menu?table=${encodeURIComponent(
-        item.tableNumber,
-      )}&qr=${encodeURIComponent(item.code)}`;
+      const menuUrl = `${origin}/restaurant/${restaurantSlug}/menu?qr=${encodeURIComponent(item.code)}`;
       const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
         menuUrl,
       )}`;
@@ -115,6 +113,18 @@ export default function QrCodesPage() {
       toast.success('Copied');
     } catch {
       toast.error('Copy failed');
+    }
+  };
+
+  const deleteQrCode = async (id: string, tableNumber: string) => {
+    if (!window.confirm(`Delete QR code for Table ${tableNumber}? This cannot be undone.`)) return;
+    try {
+      await api.deleteQrCode(id);
+      setQrCodes((prev) => prev.filter((qr) => qr.id !== id));
+      toast.success('QR code deleted');
+    } catch (error: unknown) {
+      const e = error as { message?: string };
+      toast.error(e.message || 'Failed to delete QR code');
     }
   };
 
@@ -216,6 +226,13 @@ export default function QrCodesPage() {
                   <Download size={16} className="mr-2" />
                   Download
                 </a>
+                <button
+                  onClick={() => deleteQrCode(item.id, item.tableNumber)}
+                  className="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100"
+                  title="Delete QR code"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </article>
           ))}

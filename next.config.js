@@ -1,12 +1,22 @@
 /** @type {import('next').NextConfig} */
+const isProduction = process.env.NODE_ENV === 'production';
 const nextConfig = {
   reactStrictMode: true,
+  distDir: process.env.NEXT_DIST_DIR || (isProduction ? '.next-local' : '.next'),
+  experimental: {
+    webpackBuildWorker: false,
+    workerThreads: false,
+  },
   images: {
-    domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.qrserver.com',
+        pathname: '/v1/**',
+      },
+    ],
     formats: ['image/avif', 'image/webp'],
   },
-  // Enable standalone output for Docker
-  output: 'standalone',
   // Optimize production builds
   swcMinify: true,
   // Compress responses

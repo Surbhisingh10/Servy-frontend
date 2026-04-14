@@ -1,0 +1,4 @@
+
+> restaurant-saas-frontend@1.0.0 dev
+> node scripts/run-next.cjs dev --port 3001
+

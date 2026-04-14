@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { BackendUnavailableError, fetchBackend, getBackendBaseUrl } from './backend-fetch';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+const API_URL = getBackendBaseUrl();
 
 export async function proxyAdminMutation(
   request: NextRequest,
@@ -16,14 +17,25 @@ export async function proxyAdminMutation(
   const hasBody = method !== 'DELETE';
   const body = hasBody ? await request.json().catch(() => ({})) : undefined;
 
-  const response = await fetch(`${API_URL}${backendPath}`, {
-    method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: hasBody ? JSON.stringify(body) : undefined,
-  });
+  let response;
+  try {
+    response = await fetchBackend(`${API_URL}${backendPath}`, {
+      method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: hasBody ? JSON.stringify(body) : undefined,
+    });
+  } catch (error) {
+    if (error instanceof BackendUnavailableError) {
+      return NextResponse.json(
+        { message: 'Backend API is unavailable. Start the server on port 3001 and try again.' },
+        { status: 503 },
+      );
+    }
+    throw error;
+  }
 
   const json = await response.json().catch(() => null);
   return NextResponse.json(json || {}, { status: response.status });

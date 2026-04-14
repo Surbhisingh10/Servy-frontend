@@ -54,8 +54,12 @@ export default function RegisterPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            Register your restaurant
           </h2>
+          <p className="mt-3 text-center text-sm text-gray-600">
+            New restaurant signups go through a one-time admin approval flow. If you already
+            submitted onboarding, sign in to check status instead of registering again.
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
@@ -95,13 +99,13 @@ export default function RegisterPage() {
               label="Restaurant slug or ID"
               {...register('restaurantId')}
               error={errors.restaurantId?.message}
-              placeholder="e.g. demo-restaurant"
+              placeholder="e.g. spice-club"
             />
             <Input
               label="Restaurant name (optional)"
               {...register('restaurantName')}
               error={errors.restaurantName?.message}
-              placeholder="Used if a new restaurant is created"
+              placeholder="Used when creating a new restaurant"
             />
           </div>
 

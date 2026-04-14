@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { Minus, Plus } from 'lucide-react';
-import Image from 'next/image';
 import { useCartStore } from '@/store/cart-store';
+import { resolveMediaUrl } from '@/lib/media';
 
 interface MenuItem {
   id: string;
@@ -33,6 +33,7 @@ export default function MenuItemCard({ item, onItemClick }: MenuItemCardProps) {
     currency: 'INR',
     maximumFractionDigits: 2,
   });
+  const imageSrc = resolveMediaUrl(item.image);
 
   const handleIncrement = () => {
     addItem({
@@ -52,13 +53,14 @@ export default function MenuItemCard({ item, onItemClick }: MenuItemCardProps) {
       className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
     >
       <div className="flex gap-4 p-4">
-        {item.image ? (
+        {imageSrc ? (
           <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-            <Image
-              src={item.image}
+            <img
+              src={imageSrc}
               alt={item.name}
-              fill
-              className="object-cover"
+              className="h-full w-full object-cover"
+              loading="lazy"
+              referrerPolicy="no-referrer"
             />
           </div>
         ) : (

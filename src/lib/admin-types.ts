@@ -68,3 +68,33 @@ export interface AdminUser {
   lastLoginAt?: string | null;
   createdAt: string;
 }
+
+export type NotificationAudience = 'RESTAURANT' | 'ADMIN';
+export type NotificationCategory =
+  | 'ONBOARDING'
+  | 'ORDER'
+  | 'SUPPORT'
+  | 'PAYMENT'
+  | 'SUBSCRIPTION'
+  | 'SYSTEM'
+  | 'REVENUE';
+
+export interface AppNotification {
+  id: string;
+  audience: NotificationAudience;
+  category: NotificationCategory;
+  title: string;
+  body: string;
+  metadata?: Record<string, unknown> | null;
+  isRead: boolean;
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  status?: 'PENDING' | 'SENT' | 'READ';
+  dedupeKey?: string | null;
+  targetRole?: 'OWNER' | 'MANAGER' | 'STAFF' | null;
+  targetUserId?: string | null;
+  readAt?: string | null;
+  createdAt: string;
+  restaurantId?: string | null;
+  outletId?: string | null;
+  adminUserId?: string | null;
+}

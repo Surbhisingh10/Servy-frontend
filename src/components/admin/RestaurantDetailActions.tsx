@@ -5,15 +5,27 @@ import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import AdminModal from '@/components/admin/AdminModal';
 import { Plan } from '@/lib/admin-types';
+import RestaurantEditModal from './RestaurantEditModal';
 
 export default function RestaurantDetailActions({
   restaurantId,
   plans,
   onboardingState,
+  initialValues,
 }: {
   restaurantId: string;
   plans: Plan[];
   onboardingState?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  initialValues: {
+    name: string;
+    email: string;
+    phone?: string | null;
+    address?: string | null;
+    city?: string | null;
+    state?: string | null;
+    country?: string | null;
+    zipCode?: string | null;
+  };
 }) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -55,9 +67,28 @@ export default function RestaurantDetailActions({
     router.refresh();
   };
 
+  const removeRestaurant = async () => {
+    const confirmed = window.confirm(
+      'Delete this restaurant permanently? This will remove the restaurant and all restaurant-owned data from the platform.',
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    const response = await fetch(`/api/admin/restaurants/${restaurantId}`, { method: 'DELETE' });
+    if (!response.ok) {
+      const json = await response.json().catch(() => null);
+      window.alert(json?.message || 'Failed to delete restaurant');
+      return;
+    }
+    router.push('/admin/restaurants');
+    router.refresh();
+  };
+
   return (
     <>
       <div className="flex flex-wrap gap-2">
+        <RestaurantEditModal restaurantId={restaurantId} initialValues={initialValues} />
         {onboardingState !== 'APPROVED' && (
           <>
             <Button size="sm" onClick={() => reviewOnboarding('APPROVE')}>
@@ -76,6 +107,9 @@ export default function RestaurantDetailActions({
         </Button>
         <Button size="sm" variant="outline" onClick={() => setStatus('EXPIRED')}>
           Cancel subscription
+        </Button>
+        <Button size="sm" variant="outline" onClick={removeRestaurant}>
+          Delete restaurant
         </Button>
       </div>
 

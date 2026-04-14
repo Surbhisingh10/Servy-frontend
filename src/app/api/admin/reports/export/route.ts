@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { BackendUnavailableError, fetchBackend, getBackendBaseUrl } from '@/lib/backend-fetch';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+const API_URL = getBackendBaseUrl();
 
 export async function GET(request: NextRequest) {
   const token = cookies().get('admin_token')?.value;
@@ -10,11 +11,23 @@ export async function GET(request: NextRequest) {
   }
 
   const type = request.nextUrl.searchParams.get('type') || 'revenue';
-  const response = await fetch(`${API_URL}/admin/export/${type}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  let response;
+  try {
+    response = await fetchBackend(`${API_URL}/admin/export/${type}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    if (error instanceof BackendUnavailableError) {
+      return NextResponse.json(
+        { message: 'Backend API is unavailable. Start the server on port 3001 and try again.' },
+        { status: 503 },
+      );
+    }
+    throw error;
+  }
+
   const text = await response.text();
   return new NextResponse(text, {
     status: response.status,

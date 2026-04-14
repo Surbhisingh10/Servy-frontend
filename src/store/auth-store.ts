@@ -8,6 +8,9 @@ interface User {
   lastName?: string;
   role: string;
   restaurantId: string;
+  organizationId?: string;
+  outletId?: string | null;
+  accessibleOutletIds?: string[];
 }
 
 interface AuthState {
@@ -23,6 +26,7 @@ interface AuthState {
     phone?: string;
     restaurantId: string;
     restaurantName?: string;
+    outletNames?: string[];
   }) => Promise<void>;
   logout: () => void;
   fetchUser: () => Promise<void>;
@@ -66,10 +70,17 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('selected_outlet_id');
+      localStorage.removeItem('restaurantSlug');
+      localStorage.removeItem('restaurantTableNumber');
+      localStorage.removeItem('lastOrder');
+      localStorage.removeItem('customerOrderHistory');
+      localStorage.removeItem('restaurant-cart');
     }
     set({
       user: null,
       isAuthenticated: false,
+      isLoading: false,
     });
   },
 

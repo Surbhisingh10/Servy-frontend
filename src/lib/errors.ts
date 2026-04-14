@@ -34,7 +34,11 @@ export const handleApiError = (error: any): ApiError => {
     return error;
   }
 
-  return new ApiError(500, error.message || 'Network error occurred');
+  return new ApiError(
+    0,
+    'Cannot reach the backend API. Make sure the Nest server is running on http://localhost:3001.',
+    'NETWORK_ERROR',
+  );
 };
 
 export const getErrorMessage = (error: unknown): string => {

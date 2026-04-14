@@ -14,6 +14,8 @@ interface DetailResponse {
   email: string;
   phone?: string;
   status: string;
+  country?: string;
+  zipCode?: string;
   onboarding?: {
     state: 'PENDING' | 'APPROVED' | 'REJECTED';
     rejectionReason?: string | null;
@@ -89,6 +91,16 @@ export default async function RestaurantDetailPage({ params }: { params: { id: s
         restaurantId={params.id}
         plans={plans}
         onboardingState={detail.onboarding?.state}
+        initialValues={{
+          name: detail.name,
+          email: detail.email,
+          phone: detail.phone,
+          address: detail.address,
+          city: detail.city,
+          state: detail.state,
+          country: detail.country,
+          zipCode: detail.zipCode,
+        }}
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
