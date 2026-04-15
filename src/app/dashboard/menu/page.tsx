@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth-store';
 import { motion } from 'framer-motion';
@@ -366,12 +367,12 @@ export default function MenuPage() {
           >
             {resolveItemImage(item.image) ? (
               <div className="relative w-full h-40 rounded-lg overflow-hidden bg-gray-100 mb-4">
-                <img
+                <Image
                   src={resolveItemImage(item.image)!}
                   alt={item.name}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
+                  fill
+                  className="object-cover"
+                  unoptimized
                 />
               </div>
             ) : (

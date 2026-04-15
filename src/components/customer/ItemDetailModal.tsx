@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import BottomSheet from './BottomSheet';
 import Button from '@/components/ui/Button';
 import { Plus, Minus } from 'lucide-react';
@@ -63,12 +64,12 @@ export default function ItemDetailModal({ item, isOpen, onClose }: ItemDetailMod
         {/* Image */}
         {imageSrc && (
           <div className="relative w-full h-48 rounded-xl overflow-hidden bg-gray-100 -mx-6">
-            <img
+            <Image
               src={imageSrc}
               alt={item.name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-              referrerPolicy="no-referrer"
+              fill
+              className="object-cover"
+              unoptimized
             />
           </div>
         )}

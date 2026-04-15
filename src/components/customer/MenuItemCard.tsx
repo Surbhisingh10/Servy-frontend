@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Minus, Plus } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
@@ -55,12 +56,12 @@ export default function MenuItemCard({ item, onItemClick }: MenuItemCardProps) {
       <div className="flex gap-4 p-4">
         {imageSrc ? (
           <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-            <img
+            <Image
               src={imageSrc}
               alt={item.name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-              referrerPolicy="no-referrer"
+              fill
+              className="object-cover"
+              unoptimized
             />
           </div>
         ) : (
