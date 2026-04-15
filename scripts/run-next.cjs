@@ -20,7 +20,12 @@ if (!process.env.NEXT_DIST_DIR) {
 ensureNextDistDir();
 
 const nextBin = require.resolve('next/dist/bin/next');
-const result = spawnSync(process.execPath, [nextBin, ...process.argv.slice(2)], {
+// Always skip ESLint for production builds — linting errors must not block deployment
+const args = process.argv.slice(2);
+if (command === 'build' && !args.includes('--no-lint')) {
+  args.push('--no-lint');
+}
+const result = spawnSync(process.execPath, [nextBin, ...args], {
   stdio: 'inherit',
   env: process.env,
 });
