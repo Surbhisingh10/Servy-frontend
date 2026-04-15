@@ -13,7 +13,8 @@ Module._initPaths();
 
 const command = process.argv[2];
 if (!process.env.NEXT_DIST_DIR) {
-  process.env.NEXT_DIST_DIR = command === 'dev' ? '.next' : '.next-local';
+  // On Vercel, always use the standard .next dir so the platform can find the output
+  process.env.NEXT_DIST_DIR = (command === 'dev' || process.env.VERCEL) ? '.next' : '.next-local';
 }
 
 ensureNextDistDir();
