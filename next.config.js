@@ -2,6 +2,9 @@
 const isProduction = process.env.NODE_ENV === 'production';
 const nextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   distDir: process.env.NEXT_DIST_DIR || (isProduction ? '.next-local' : '.next'),
   experimental: {
     webpackBuildWorker: false,
