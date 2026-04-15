@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node scripts/run-next.cjs dev",
     "prebuild": "node scripts/ensure-next-dist.cjs",
-    "build": "node scripts/run-next.cjs build",
+    "build": "node scripts/run-next.cjs build --no-lint",
     "prestart": "node scripts/ensure-next-dist.cjs",
     "start": "node scripts/run-next.cjs start",
     "lint": "next lint",
