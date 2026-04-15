@@ -181,7 +181,7 @@ export default function CentralizeOnlineOrdersPage() {
             <div className="mt-12 rounded-[2rem] border border-amber-100 bg-amber-50/60 p-7">
               <h2 className="text-xl font-semibold text-slate-900">A note on reconciliation</h2>
               <p className="mt-3 text-sm leading-7 text-slate-600">
-                Aggregator payouts include platform fees, packaging charges, cancellation deductions, and tax adjustments. Without a unified order log, these deductions are impossible to verify. Servy's reconciliation report cross-references every order against the payout line item, so you can see exactly what was deducted and why — and flag errors within the dispute window.
+                Aggregator payouts include platform fees, packaging charges, cancellation deductions, and tax adjustments. Without a unified order log, these deductions are impossible to verify. Servy&apos;s reconciliation report cross-references every order against the payout line item, so you can see exactly what was deducted and why — and flag errors within the dispute window.
               </p>
               <p className="mt-3 text-sm leading-7 text-slate-600">
                 Most restaurants discover a 1.5–3% revenue leakage in their first reconciliation review. On ₹10L monthly aggregator revenue, that is ₹15,000–₹30,000 recovered per month.
